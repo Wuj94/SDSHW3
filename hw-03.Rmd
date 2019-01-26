@@ -1,0 +1,45 @@
+---
+title: "Stat4DS / Homework 03"
+author: "Giuseppe Calabrese, Michele Cernigliaro"
+date: "31/01/2019"
+output:
+  html_document: default
+  pdf_document: default
+linkcolor: cyan
+header-includes:
+- \usepackage{bbold}
+- \usepackage{framed, color}
+- \usepackage{graphicx}
+- \usepackage{mathabx}
+- \definecolor{shadecolor}{rgb}{0.89,0.8,1}
+urlcolor: magenta
+
+
+---
+
+
+
+## Exercise 01: Ultra-fast exercise
+
+Look at the two DAGs and use d-separation + Markov condition to check whether the indicated conditional independence relationships are satisfied.
+
+#### 1. graph (1), check wheter the conditional independence $x_2 \perp x_3 | \{x_1,x_6\}$ is satisfied.
+
+Starting with the first graph, with the Markov Condition we find the following _CI_:
+
+* A
+* C
+* B
+
+We can simply verify the conditional independence using *d-separation* method. We remark that, generally, two sets of nodes $\{X_A\}, \{X_B\}$ are d-separated by another set of nodes $\{X_C\}$ (the "observed" nodes) if, considering all the possible undirected paths from $\{X_A\}$ to $\{X_B\}$, we have that all the paths are **blocked**. d-separation implies conditional independece. To check wether a path is blocked or not, we have to see if at least one of the three condition is verified. The conditions can be consulted quickly on our [cheat_sheet](https://elearning.uniroma1.it/pluginfile.php/588226/mod_assign/intro/cheat_sheet_complete_v2.pdf).
+
+First of all, we find out **two** undirected paths from $X_2$ to $X_3$:
+
+1. The **first one**, going counterclockwise, is the path **$X_2 - X_1 - X_3$**. We notice immediatly that it's a common case ($X_2 \leftarrow X_1 \rightarrow X_3$) with the observed value $X_1$, hence, we have a blocked path. We can move on analyzing the second path.
+
+
+2. The **second one**, going through the opposite way, it's the path **$X_2 - X_6 - X_5 - X_3$**. The observed value in this case is $X_6$. We don't have any condition which states that the path is blocked. Indeed, we have that $X_6$ it's a collider, but since $X_6$ is the observed node, the condition is not verified.  Moreover we have a chain ($X_3 \rightarrow X_5 \rightarrow X_6$) but $X_5$ is unobserved (we should have $X_6$ as ``center'' of the chain to satisfy the condition). Since we don't have any condition satisfied, the second path is not blocked.
+
+We don't have all the paths blocked, hence we are not able to conclude that $X_2$ is d-separated from $X_3$ by $\{x_1,x_6\}$.
+
+
