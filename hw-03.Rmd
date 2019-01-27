@@ -11,6 +11,8 @@ header-includes:
 - \usepackage{framed, color}
 - \usepackage{graphicx}
 - \usepackage{mathabx}
+- \usepackage{mathtools}
+- \usepackage[makeroom]{cancel}
 - \definecolor{shadecolor}{rgb}{0.89,0.8,1}
 urlcolor: magenta
 
@@ -27,7 +29,7 @@ Look at the two DAGs and use d-separation + Markov condition to check whether th
 
 Starting with the first graph, with the Markov Condition we find the following _CI_:
 
-* A
+* $X_6 \perp X_4 | X_2, X_5$
 * C
 * B
 
@@ -38,8 +40,64 @@ First of all, we find out **two** undirected paths from $X_2$ to $X_3$:
 1. The **first one**, going counterclockwise, is the path **$X_2 - X_1 - X_3$**. We notice immediatly that it's a common case ($X_2 \leftarrow X_1 \rightarrow X_3$) with the observed value $X_1$, hence, we have a blocked path. We can move on analyzing the second path.
 
 
-2. The **second one**, going through the opposite way, it's the path **$X_2 - X_6 - X_5 - X_3$**. The observed value in this case is $X_6$. We don't have any condition which states that the path is blocked. Indeed, we have that $X_6$ it's a collider, but since $X_6$ is the observed node, the condition is not verified.  Moreover we have a chain ($X_3 \rightarrow X_5 \rightarrow X_6$) but $X_5$ is unobserved (we should have $X_6$ as ``center'' of the chain to satisfy the condition). Since we don't have any condition satisfied, the second path is not blocked.
+2. The **second one**, going through the opposite way, is the path **$X_2 - X_6 - X_5 - X_3$**. The observed value in this case is $X_6$. We don't have any condition which states that the path is blocked. Indeed, we have that $X_6$ it's a collider, but since $X_6$ is the observed node, the condition is not verified.  Moreover we have a chain ($X_3 \rightarrow X_5 \rightarrow X_6$) but $X_5$ is unobserved (we should have $X_6$ as ``center'' of the chain to satisfy the condition). Since we don't have any condition satisfied, the second path is not blocked.
 
-We don't have all the paths blocked, hence we are not able to conclude that $X_2$ is d-separated from $X_3$ by $\{x_1,x_6\}$.
+We don't have all the paths blocked, hence we are not able to conclude that $X_2$ is d-separated from $X_3$ by $\{X_1,X_6\}$.
 
+
+
+
+#### 2. graph (2), check wheter the conditional independence $X_1 \perp x_6 | \{x_2,x_3\}$ is satisfied.
+
+Also in this case, we have **two** undirected paths, from $X_1$ to $X_6$:
+
+1. $X_1 - X_2 - X_6$. We notice immediately that it's a chain with observed value $X_2$. Hence the path is blocked.
+
+2. $X_1 - X_3 - X_5 - X_6$. We have another chain ($X_1 \rightarrow X_3 \rightarrow X_5$) with observed value $X_3$. Also this path is blocked.
+
+Since every path is blocked, we can conclude that the conditional independence $X_1 \perp x_6 | \{x_2,x_3\}$ is satisfied.
+
+#### 2.a For the conditional independence relation in (2), provide also a direct check by showing whether or not $p(x_6 | x_{1:3}) = p(x_6 | x_{2:3}$)
+
+
+
+We can use the Markov condition to define the joint probability of our network:
+
+\[
+p(x_1, x_2, x_3, x_4, x_5, x_6) = p(x_1) p(x_2 |x_1) p(x_3 | x_1) p(x_4|x_2) p(x_5|x_3) p(x_6|x_2, x_5)
+\]
+
+To pick the joint probability of the nodes that we want, we can just marginalize w.r.t. the nodes that we want to keep. For instance, for the set of nodes $\{x_1,x_2,x_3, x_6\}$ we will have:
+
+\begin{equation} 
+\begin{split}
+p(x_1, x_2, x_3, x_6) & = \sum_{x_4} \sum_{x_5} p(x_1) p(x_2 |x_1) p(x_3 | x_1) p(x_4|x_2) p(x_5|x_3) p(x_6|x_2, x_5) \\
+& = p(x_1) p(x_2 |x_1) p(x_3 | x_1) \sum_{x_4} p(x_4|x_2) \sum_{x_5} p(x_5|x_3) p(x_6|x_2, x_5) \\
+& = p(x_1) p(x_2 | x_1) p(x_3 | x_1) p(x_6 | x_2, x_5)
+\end{split}
+\end{equation}
+
+while for the set of nodes $\{x_2, x_3, x_6\}$, for example we have:
+
+\begin{equation} 
+\begin{split}
+p( x_2, x_3, x_6) & = \sum_{x_1} \sum_{x_4} \sum_{x_5} p(x_1) p(x_2 |x_1) p(x_3 | x_1) p(x_4|x_2) p(x_5|x_3) p(x_6|x_2, x_5) \\
+& = \sum_{x_1} p(x_1) \cdot p(x_2 |x_1) p(x_3 | x_1) \sum_{x_4} p(x_4|x_2) \sum_{x_5} p(x_5|x_3) p(x_6|x_2, x_5) \\
+& = p(x_2 | x_1) p(x_3 | x_1) p(x_6 | x_2, x_5)
+\end{split}
+\end{equation}
+
+With the same logic, we can notice that $p(x_2,x_3) = p(x_2 | x_1) p(x_3 | x_1)$. 
+
+Now, assuming that we start from $p(x_6 | x_{1:3})$, with the definition of conditional probability we have:
+
+\[
+p(x_6 | x_1,x_2,x_3) = \frac{p(x_1,x_2,x_3,x_6)}{p(x_1,x_2,x_3)} = \frac{p(x_1) p(x_2 | x_1) p(x_3 | x_1) p(x_6 | x_2, x_5)}{p(x_1) p(x_2 | x_1) p(x_3 | x_1)} = \frac{p(x_2 | x_1) p(x_3 | x_1) p(x_6 | x_2, x_5)}{p(x_2 | x_1) p(x_3 | x_1)}
+\]
+
+Using the equations we have observed, we will reach the conditional probability we are interested in:
+
+\[
+p(x_6 | x_1,x_2,x_3) = \frac{p(x_2 | x_1) p(x_3 | x_1) p(x_6 | x_2, x_5)}{p(x_2 | x_1) p(x_3 | x_1)} = \frac{p(x_2,x_3,x_6)}{p(x_2,x_3)} = p(x_6 | x_2, x_3)
+\]
 
