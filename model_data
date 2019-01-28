@@ -1,0 +1,4 @@
+list(mu = 0.35,      # parameters of prior distribution
+     sigma = 1000,
+     a = 0.001, 
+     b = 0.001)
