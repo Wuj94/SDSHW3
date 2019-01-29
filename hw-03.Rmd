@@ -19,61 +19,87 @@ urlcolor: magenta
 
 ---
 
+---------------
+
+Exercise 1.A: Ultra-fast exercise
+----------
 
 
-## Exercise 01: Ultra-fast exercise
+***Look at the two DAGs and use d-separation + Markov condition to check whether the indicated conditional independence relationships are satisfied.***
 
-Look at the two DAGs and use d-separation + Markov condition to check whether the indicated conditional independence relationships are satisfied.
+For the exercize 1.A we can simply verify the conditional independences using *d-separation* method. We remark that, generally, two sets of nodes $\{X_A\}, \{X_B\}$ are d-separated by another set of nodes $\{X_C\}$ (the "observed" nodes) if, considering all the possible undirected paths from $\{X_A\}$ to $\{X_B\}$, we have that all the paths are **blocked**. d-separation implies conditional independece. To check wether a path is blocked or not, we have to see if at least one of the three condition is verified. The conditions can be consulted quickly on our [cheat_sheet](https://elearning.uniroma1.it/pluginfile.php/588226/mod_assign/intro/cheat_sheet_complete_v2.pdf).
 
-#### 1. graph (1), check wheter the conditional independence $x_2 \perp x_3 | \{x_1,x_6\}$ is satisfied.
+#### 1) graph (1), check wheter the conditional independence $x_2 \perp x_3 \lvert \{x_1,x_6\}$ is satisfied.
 
-Starting with the first graph, with the Markov Condition we find the following _CI_:
-
-* $X_6 \perp X_4 | X_2, X_5$
-* C
-* B
-
-We can simply verify the conditional independence using *d-separation* method. We remark that, generally, two sets of nodes $\{X_A\}, \{X_B\}$ are d-separated by another set of nodes $\{X_C\}$ (the "observed" nodes) if, considering all the possible undirected paths from $\{X_A\}$ to $\{X_B\}$, we have that all the paths are **blocked**. d-separation implies conditional independece. To check wether a path is blocked or not, we have to see if at least one of the three condition is verified. The conditions can be consulted quickly on our [cheat_sheet](https://elearning.uniroma1.it/pluginfile.php/588226/mod_assign/intro/cheat_sheet_complete_v2.pdf).
+```{r, include=FALSE}
+library("ggdag")
+dag <- dagify(x6 ~ x2 + x5,
+              x4 ~ x2,
+              x2 ~ x1,
+              x3 ~ x1,
+              x5 ~ x3)
+ggdag(dag) + theme_dag_blank()
+```
 
 First of all, we find out **two** undirected paths from $X_2$ to $X_3$:
 
 1. The **first one**, going counterclockwise, is the path **$X_2 - X_1 - X_3$**. We notice immediatly that it's a common case ($X_2 \leftarrow X_1 \rightarrow X_3$) with the observed value $X_1$, hence, we have a blocked path. We can move on analyzing the second path.
 
 
-2. The **second one**, going through the opposite way, is the path **$X_2 - X_6 - X_5 - X_3$**. The observed value in this case is $X_6$. We don't have any condition which states that the path is blocked. Indeed, we have that $X_6$ it's a collider, but since $X_6$ is the observed node, the condition is not verified.  Moreover we have a chain ($X_3 \rightarrow X_5 \rightarrow X_6$) but $X_5$ is unobserved (we should have $X_6$ as ``center'' of the chain to satisfy the condition). Since we don't have any condition satisfied, the second path is not blocked.
+2. The **second one**, going through the opposite way, is the path **$X_2 - X_6 - X_5 - X_3$**. The observed value in this case is $X_6$. We don't have any condition which states that the path is blocked. Indeed, we have that $X_6$ it's a collider ($X_2 \rightarrow X_6 \leftarrow X_5$), but since $X_6$ is the observed node, the condition is not verified. Moreover we have a chain ($X_3 \rightarrow X_5 \rightarrow X_6$) but $X_5$ is unobserved (we should have $X_6$ as "center" of the chain to satisfy the condition). Since we don't have any condition satisfied, the second path is not blocked.
 
-We don't have all the paths blocked, hence we are not able to conclude that $X_2$ is d-separated from $X_3$ by $\{X_1,X_6\}$.
-
-
+We don't have all the paths blocked, hence we are not able to conclude that $X_2$ is d-separated from $X_3$ by $\{X_1,X_6\}$, thus the conditional independence is not satisfied.
 
 
-#### 2. graph (2), check wheter the conditional independence $X_1 \perp x_6 | \{x_2,x_3\}$ is satisfied.
+
+
+#### 2.a) graph (2), check wheter the conditional independence $X_1 \perp X_6 \lvert \{X_2,X_3\}$ is satisfied.
 
 Also in this case, we have **two** undirected paths, from $X_1$ to $X_6$:
 
-1. $X_1 - X_2 - X_6$. We notice immediately that it's a chain with observed value $X_2$. Hence the path is blocked.
+1. $X_1 - X_2 - X_6$. We notice immediately that it's a chain with observed value $X_2$ ($X_1 \rightarrow X_2 \rightarrow X_6$). Hence the path is blocked.
 
 2. $X_1 - X_3 - X_5 - X_6$. We have another chain ($X_1 \rightarrow X_3 \rightarrow X_5$) with observed value $X_3$. Also this path is blocked.
 
-Since every path is blocked, we can conclude that the conditional independence $X_1 \perp x_6 | \{x_2,x_3\}$ is satisfied.
+Since every path is blocked, we can conclude that the conditional independence $X_1 \perp X_6 \lvert \{X_2,X_3\}$ is satisfied.
 
-#### 2.a For the conditional independence relation in (2), provide also a direct check by showing whether or not $p(x_6 | x_{1:3}) = p(x_6 | x_{2:3}$)
+#### 2.b) For the conditional independence relation in (2), provide also a direct check by showing whether or not $p(x_6 \lvert x_{1:3}) = p(x_6 \lvert x_{2:3}$)
 
-
-
-We can use the Markov condition to define the joint probability of our network:
+Starting with the definition of conditional probability, we have the following:
 
 \[
-p(x_1, x_2, x_3, x_4, x_5, x_6) = p(x_1) p(x_2 |x_1) p(x_3 | x_1) p(x_4|x_2) p(x_5|x_3) p(x_6|x_2, x_5)
+p(x_6 \lvert x_1,x_2,x_3) = \frac{p(x_1,x_2,x_3,x_6)}{p(x_1,x_2,x_3)}
+\]
+
+We can rewrite the joint probabilities conditioning both numerator and denominator w.r.t. $x_2$ and $x_3$:
+
+\[
+p(x_6 \lvert x_1,x_2,x_3) = \frac{p(x_1,x_6 \lvert x_2,x_3) \cdot p(x_2, x_3)}{p(x_1\lvert x_2,x_3) \cdot p(x_2, x_3)} = \frac{p(x_1,x_6 \lvert x_2,x_3) }{p(x_1\lvert x_2,x_3)}
+\]
+
+Now, using the fact that $x_1 \perp x_6 \lvert  x_2, x_3$ (as we demonstrated in the point 2.a), we factorize the numerator and we get that:
+
+\[
+p(x_6 \lvert  x_1,x_2,x_3) = \frac{p(x_1 \lvert  x_2,x_3) \cdot p(x_6 \lvert  x_2,x_3)}{p(x_1\lvert x_2,x_3)} = p(x_6 \lvert  x_2,x_3)
+\]
+
+
+---
+
+As extra, we provide a demonstration of the probability without using the conditional independence of $x_1$ and $x_6$.
+Using the Markov condition we can express the joint probability of our network as follows:
+
+\[
+p(x_1, x_2, x_3, x_4, x_5, x_6) = p(x_1) p(x_2 \lvert x_1) p(x_3 \lvert x_1) p(x_4 \lvert x_2) p(x_5 \lvert x_3) p(x_6 \lvert x_2, x_5)
 \]
 
 To pick the joint probability of the nodes that we want, we can just marginalize w.r.t. the nodes that we want to keep. For instance, for the set of nodes $\{x_1,x_2,x_3, x_6\}$ we will have:
 
 \begin{equation} 
 \begin{split}
-p(x_1, x_2, x_3, x_6) & = \sum_{x_4} \sum_{x_5} p(x_1) p(x_2 |x_1) p(x_3 | x_1) p(x_4|x_2) p(x_5|x_3) p(x_6|x_2, x_5) \\
-& = p(x_1) p(x_2 |x_1) p(x_3 | x_1) \sum_{x_4} p(x_4|x_2) \sum_{x_5} p(x_5|x_3) p(x_6|x_2, x_5) \\
-& = p(x_1) p(x_2 | x_1) p(x_3 | x_1) p(x_6 | x_2, x_5)
+p(x_1, x_2, x_3, x_6) & = \sum_{x_4} \sum_{x_5} p(x_1) p(x_2 \lvert x_1) p(x_3 \lvert  x_1) p(x_4 \lvert x_2) p(x_5 \lvert x_3) p(x_6 \lvert x_2, x_5) \\
+& = p(x_1) p(x_2  \lvert x_1) p(x_3  \lvert  x_1) \sum_{x_4} p(x_4 \lvert x_2) \sum_{x_5} p(x_5 \lvert x_3) p(x_6 \lvert x_2, x_5) \\
+& = p(x_1) p(x_2  \lvert  x_1) p(x_3  \lvert  x_1) p(x_6  \lvert  x_2, x_5)
 \end{split}
 \end{equation}
 
@@ -81,23 +107,44 @@ while for the set of nodes $\{x_2, x_3, x_6\}$, for example we have:
 
 \begin{equation} 
 \begin{split}
-p( x_2, x_3, x_6) & = \sum_{x_1} \sum_{x_4} \sum_{x_5} p(x_1) p(x_2 |x_1) p(x_3 | x_1) p(x_4|x_2) p(x_5|x_3) p(x_6|x_2, x_5) \\
-& = \sum_{x_1} p(x_1) \cdot p(x_2 |x_1) p(x_3 | x_1) \sum_{x_4} p(x_4|x_2) \sum_{x_5} p(x_5|x_3) p(x_6|x_2, x_5) \\
-& = p(x_2 | x_1) p(x_3 | x_1) p(x_6 | x_2, x_5)
+p( x_2, x_3, x_6) & = \sum_{x_1} \sum_{x_4} \sum_{x_5} p(x_1) p(x_2  \lvert x_1) p(x_3  \lvert  x_1) p(x_4 \lvert x_2) p(x_5 \lvert x_3) p(x_6 \lvert x_2, x_5) \\
+& = \sum_{x_1} p(x_1) \cdot p(x_2  \lvert x_1) p(x_3  \lvert  x_1) \sum_{x_4} p(x_4 \lvert x_2) \sum_{x_5} p(x_5 \lvert x_3) p(x_6 \lvert x_2, x_5) \\
+& = p(x_2  \lvert  x_1) p(x_3  \lvert  x_1) p(x_6  \lvert  x_2, x_5)
 \end{split}
 \end{equation}
 
-With the same logic, we can notice that $p(x_2,x_3) = p(x_2 | x_1) p(x_3 | x_1)$. 
+With the same logic, we notice that $p(x_2,x_3) = p(x_2  \lvert  x_1) p(x_3  \lvert  x_1)$. 
 
-Now, assuming that we start from $p(x_6 | x_{1:3})$, with the definition of conditional probability we have:
+Now, assuming that picking $p(x_6  \lvert  x_{1:3})$, with the definition of conditional probability we have:
 
 \[
-p(x_6 | x_1,x_2,x_3) = \frac{p(x_1,x_2,x_3,x_6)}{p(x_1,x_2,x_3)} = \frac{p(x_1) p(x_2 | x_1) p(x_3 | x_1) p(x_6 | x_2, x_5)}{p(x_1) p(x_2 | x_1) p(x_3 | x_1)} = \frac{p(x_2 | x_1) p(x_3 | x_1) p(x_6 | x_2, x_5)}{p(x_2 | x_1) p(x_3 | x_1)}
+p(x_6  \lvert  x_1,x_2,x_3) = \frac{p(x_1,x_2,x_3,x_6)}{p(x_1,x_2,x_3)} = \frac{p(x_1) p(x_2  \lvert  x_1) p(x_3  \lvert  x_1) p(x_6  \lvert  x_2, x_5)}{p(x_1) p(x_2  \lvert  x_1) p(x_3  \lvert  x_1)} = \frac{p(x_2  \lvert  x_1) p(x_3  \lvert  x_1) p(x_6  \lvert  x_2, x_5)}{p(x_2  \lvert  x_1) p(x_3  \lvert  x_1)}
 \]
 
 Using the equations we have observed, we will reach the conditional probability we are interested in:
 
 \[
-p(x_6 | x_1,x_2,x_3) = \frac{p(x_2 | x_1) p(x_3 | x_1) p(x_6 | x_2, x_5)}{p(x_2 | x_1) p(x_3 | x_1)} = \frac{p(x_2,x_3,x_6)}{p(x_2,x_3)} = p(x_6 | x_2, x_3)
+p(x_6  \lvert  x_1,x_2,x_3) = \frac{p(x_2  \lvert  x_1) p(x_3  \lvert  x_1) p(x_6  \lvert  x_2, x_5)}{p(x_2  \lvert  x_1) p(x_3  \lvert  x_1)} = \frac{p(x_2,x_3,x_6)}{p(x_2,x_3)} = p(x_6  \lvert  x_2, x_3)
 \]
 
+We've obtained in a different way that $p(x_6  \lvert  x_{1:3}) = p(x_6 \lvert x_{2:3})$, thus that $x_6 \perp x_1  \lvert  x_2, x_3$.
+
+---------------
+
+Exercise 2.A: Sampling a DAG
+----------
+***Given the Bayesian model in DAG format, where, conditionally on $\boldsymbol{\mu} = [\mu_1, \mu_2]$ and $\sigma^2$, we assume that:***
+
+$X = [X_1, X_2]^T \sim N_2(\boldsymbol{\mu}, \sigma^2 \mathbb{I}_2)$
+
+$Y = [Y_1, Y_2]^T \sim N_2(\boldsymbol{\mu}, \sigma^2 \mathbb{I}_2)$
+
+#### Use what we studied about conditional distributions of multivariate Normal vectors to write down in formula the joint distribution corresponding to this dag.
+
+We start expressing the joint distribution of the DAG using the Markov condition:
+
+\[
+f(\boldsymbol{\mu}, \sigma^2, X_1,X_2,Y_1,Y_2 ) = f(\boldsymbol{\mu})f(\sigma^2)f(X_1  \lvert  \mu_1,\sigma^2)f(X_2  \lvert  X_1, \mu_2,\sigma^2) f(Y_1  \lvert  \mu_1,\sigma^2) f(Y_2  \lvert  \mu_2, \sigma^2)
+\]
+
+Since $\mu_1, \mu_2, \sigma^2$ are constants, their probability is 1. Moreover, with the assumptions we made aboud $\boldsymbol{X}$ and $\boldsymbol{Y}$, we 
