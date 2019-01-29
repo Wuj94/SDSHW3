@@ -1,4 +1,4 @@
-df <- read.csv("NGC6611.csv")
+df <- read.csv("/home/data/MScDS/SDS/SDSHW3/NGC6611.csv")
 
 # histogram and density ---------------------------------------------------
 
@@ -50,4 +50,13 @@ skewness coefficient we confirm that the distribution of the masses recorded in
 NGC661 have a right tail, this means that the mass of the distribution is 
 concentrated on the left of our density"
 
+# sample kurtosis
+kurt <- function(x) {
+  mea <- mean(x)
+  m4 <- sum((x - mea)^4)/length(x)
+  m2 <- sum((x - mea)^2)/length(x)
+  
+  return(m4/(m2^2) - 3)
+}
 
+kurt(df$Mass)
