@@ -12,10 +12,15 @@ n <- 10000
 data <- matrix(data = NA, nrow=n, ncol=7)
 colnames(data) <- c('mu1', 'mu2', 'sigma2', 'x1', 'x2', 'y1', 'y2')
 
+n.mu <- 0
+n.sd <- 1000
+g.shape <- 3
+g.rate <- 1/6
+
 for(i in 1:n){
-  data[i, "mu1"] <- rbeta(1, 1, 1)
-  data[i, "mu2"] <- rbeta(1, 1, 1)
-  data[i, "sigma2"] <- rbeta(1, 1, 1)
+  data[i, "mu1"] <- rnorm(1, n.mu, n.sd)
+  data[i, "mu2"] <- rnorm(1, n.mu, n.sd)
+  data[i, "sigma2"] <- rgamma(1, g.shape, g.rate)
   
   data[i, "x1"] <- rnorm(1, data[i, "mu1"], sqrt(data[i, "sigma2"]))
   data[i, "x2"] <- rnorm(1, data[i, "mu2"], sqrt(data[i, "sigma2"]))
