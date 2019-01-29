@@ -48,10 +48,12 @@ init <- list(list(location = 0, scale = 2),
              list(location = 2, scale = 5.2))
 
 
-# Model Fitting
+
+# Model Fitting -----------------------------------------------------------
 
 fit <- jags(model = model, init = init, 
             param = c("location", "scale"), 
             data = dd, n.iter = 500, 
             n.chain = 3, n.burn = 0,
             DIC = FALSE)
+
