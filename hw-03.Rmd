@@ -182,7 +182,7 @@ f(\boldsymbol{\mu}, \sigma^2, X_1,X_2,Y_1,Y_2 ) = f(X_1  \lvert  \mu_1,\sigma^2)
 
 #### 2. Choose two suitable (prior) distributions for $\mu$ and $\sigma^2$ and write the corresponding R code to simulate a sample of $n$ = 10000 random vectors from the joint distribution by forward/ancestral sampling.
 
-Since we have no clue of what the distribution is, we need to choose two non-informative priors. So, we choose two flat priors, as we'll do in the part B of this homework. Therefore, for $\mu_1$ and $\mu_2$ we choose a normal distribution, with mean 0 and standard deviation 1000. Instead for sigma (which is the same for every random variable) we use a gamma with shape 3 and rate 1/6. Notice that $\sigma^2$ is positive, this means that its distribution must have only ***positive*** values; in this sense the gamma distribution is a suitable prior since its support is $\mathbb{R}_0^+$.
+Since we have no clue of what the distribution is, we need to choose two non-informative priors. So, we choose two flat priors, as we'll do in the part B of this homework. Therefore, for $\mu_1$ and $\mu_2$ we choose a normal distribution, with mean 0 and standard deviation 1000. Instead for sigma, which is a scalar value for the variance of each random variable, we use a gamma with shape 0.001 and rate 0.001, to make it non informative. Notice that $\sigma^2$ is positive, this means that its distribution must have only ***positive*** values; in this sense the gamma distribution is a suitable prior since its support is $\mathbb{R}_0^+$.
 
 ```{r, fig.align='center', fig.width=10}
 n <- 10000 # sample size
@@ -192,10 +192,10 @@ data <- matrix(data = NA, nrow=n, ncol=7)
 colnames(data) <- c('mu1', 'mu2', 'sigma2', 'x1', 'x2', 'y1', 'y2')
 
 # defining our hyperparameters
-n.mu <- 0      # mu for N
-n.sd <- 1000   # mu for N
-g.shape <- 3   # shape for Gamma
-g.rate <- 1/6  # rate for Gamma
+n.mu <- 0         # mu for N
+n.sd <- 1000      # mu for N
+g.shape <- .001   # shape for Gamma
+g.rate <-  .001   # rate for Gamma
 
 # plotting the priors distributions
 col = viridis::viridis(2)
@@ -205,8 +205,8 @@ curve(dnorm(x, n.mu, n.sd), xlim = c(-1500,1500), lwd = 3, col = col[1],
       main = "Normal prior density")
 
 # sigma
-curve(dgamma(x, g.shape, g.rate), xlim = c(0,50), lwd = 3, col = col[2],
-      main = "Gamma prior density")
+curve(dgamma(x, g.shape, g.rate), xlim = c(0,100), ylim = c(0,.01),
+      lwd = 3, col = col[2], main = "Gamma prior density")
 ```
 
 Now that we've chosen our priors and we've set their hyperparameters, we simulate the sampling from the joint distribution using the ancestral/forward sampling:
