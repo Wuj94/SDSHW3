@@ -1,6 +1,0 @@
-model;
-{
-	location ~ dnorm(mu, sigma)
-	scale ~ dgamma(a, b)
-	ylog ~ dlnorm(location, scale)
-}

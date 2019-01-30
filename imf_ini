@@ -1,6 +1,0 @@
-# initial value
-list(location = 0, scale = 2)
-
-list(location = 1, scale = .4)
-
-list(location = -2, scale = 5.2)

@@ -4,17 +4,18 @@ require(R2jags, quietly = T)
 # Model -------------------------------------------------------------------
 
 model <- function(){
-  location ~ dnorm(mu, tau)
+  location ~ dnorm(mu, tau_0)
   scale ~ dgamma(a, b)
+  tau <- pow(scale, -2)
   for(i in 1:N){
-    y.log[i] ~ dlnorm(location, scale)
+    y.log[i] ~ dlnorm(location, tau)
   }
 }
 
 # Data --------------------------------------------------------------------
 
 dd <- list(mu = 0,      # parameters of prior distribution
-           tau = 0.001,
+           tau_0 = 0.001,
            a = 0.001, 
            b = 0.001,
            N = 208,
@@ -99,3 +100,15 @@ fit2 <- jags(model = model, init = init,
 
 
 fit2
+
+# Density plot ------------------------------------------------------------
+
+mcfit = as.mcmc(fit)
+#chain <- mcfit[[1]]
+
+par(mar = c(1, 3, 3, 1), 
+    oma = c(4, 4, 0.2, 0.2),
+    mfrow = c(2,2))
+plot(mcfit)
+
+#plot( chain, auto.layout = F)

@@ -1,6 +1,9 @@
 model;
 {
-	location ~ dnorm(mu, sigma)
+	location ~ dnorm(mu, tau_0)
 	scale ~ dgamma(a, b)
-	ylog ~ dlnorm(location, scale)
+	tau <- pow(scale, -2)
+	for(i in 1:N){
+		y.log[i] ~ dlnorm(location, tau)
+	}
 }

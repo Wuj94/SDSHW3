@@ -75,7 +75,7 @@ dimnames( chain )      # col names
 # Traceplot 1D ------------------------------------------------------------
 
 # Enlarge the subplots
-par(mar = c(2, 0.5, 4, 2), 
+par(mar = c(1, 1, 1, 1), 
     oma = c(4, 4, 0.2, 0.2))
 traceplot(fit, ask = FALSE, 
           mfrow = c(2,1))
@@ -86,7 +86,7 @@ traceplot(fit, ask = FALSE,
 class( chain )
 ?plot.mcmc
 
-par(mar = c(2, 0.5, 4, 2), 
+par(mar = c(1, 1, 1, 1), 
     oma = c(4, 4, 0.2, 0.2),
     mfrow = c(2,2))
 plot( chain, auto.layout = F)
