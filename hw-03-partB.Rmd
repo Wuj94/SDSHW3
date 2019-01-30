@@ -48,10 +48,10 @@ par(mfrow = c(1,1))
 ```
 
 The histogram of the masses recorded in the NGC6611 dataset shows that 
-the most common mass value is under 0.5. Moreover, as the value of the mass
-increases, we get an increasingly lower number of observation for that value. 
+the most common mass values are under 0.5. Moreover, as the value of the mass
+increases, we get lower observations for that value. 
 
-The density plot shows a multimodal distribution even though the distribution is quite a decreasing distribution after the first mode.
+The density plot shows a multimodal distribution even though the distribution is quite decreasing after the first mode.
 
 ```{r, fig.align = "center", fig.width = 10}
 # boxplot -----------------------------------------------------------------
@@ -85,9 +85,9 @@ skewn <- function (X) {
 kurt <- function(x) {
   mea <- mean(x)
   m4 <- sum((x - mea)^4)/length(x)
-  m2 <- sum((x - mea)^2)/length(x)
+  m2 <- sum((x - mea)^2)/length(x) 
   
-  return(m4/(m2^2) - 3)
+  return(m4/(m2^2))
 }
 
 # summary statistics ------------------------------------------------------
@@ -98,5 +98,6 @@ round(c(mean = mean(df$Mass), median = median(df$Mass), variance = var(df$Mass),
 ```
 
 
-Since we have a positive skewness coefficient we confirm that the distribution of the masses recorded in NGC661 have a right tail, this means that the mass of the distribution is concentrated on the left of our density. Therefore, perhaps the median should be better than the mean as an index of centrality. The kurtosis coefficient is negative, this means that the tails are thin ("_platykurtic_" distribution).
+Since we have a **positive skewness** coefficient we confirm that the distribution of the masses recorded in NGC661 have a right tail, this means that the mass of the distribution is concentrated on the left of our density (the distribution of the data is *positively* or *right skewed*). Therefore, perhaps the median should be better than the mean as an index of centrality. The **kurtosis** coefficient is **near 3**, this means that the tails are slighty thinner than the standar normal's (also the distribution of the data is _platykurtic_ - less than 3).
 
+#### Assuming non-informative Gaussian and Gamma priors for the location and scale parameter ($\mu,\sigma$), build the model as a Doodle in OpenBUGS and then save it as an .odc file that you will then upload on Moodle.
