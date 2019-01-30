@@ -54,8 +54,8 @@ init <- list(list(location = 0, scale = 2),
 
 fit <- jags(model = model, init = init, 
             param = c("location", "scale"), 
-            data = dd, n.iter = 500, 
-            n.chain = 3, n.burn = 0,
+            data = dd, n.iter = 10000, 
+            n.chain = 3, n.burn = 1000, n.thin = 1,
             DIC = FALSE)
 
 
@@ -64,10 +64,10 @@ fit
 
 # Sensitivity Analysis ----------------------------------------------------
 
-dd2 <- list(mu = 1,      # parameters of prior distribution
-           tau = 0.1,
-           a = 0.1, 
-           b = 0.1,
+dd2 <- list(mu = 2,      # parameters of prior distribution
+           tau_0 = 1,
+           a = 1, 
+           b = 1,
            N = 208,
            y.log = c( 0.678, 0.402, 0.132, 0.27, 0.284, 0.12, 0.32, 0.086, 0.316, 
                       0.579, 0.08, 0.479, 0.299, 0.028, 0.2, 0.085, 0.377, 0.768, 0.525, 
@@ -92,10 +92,11 @@ dd2 <- list(mu = 1,      # parameters of prior distribution
                       1.022, 0.663, 1.078, 1.461, 1.19, 0.986, 1.099, 0.924, 1.23 )
 )
 
+
 fit2 <- jags(model = model, init = init, 
             param = c("location", "scale"), 
-            data = dd2, n.iter = 500, 
-            n.chain = 3, n.burn = 0,
+            data = dd2, n.iter = 10000, 
+            n.chain = 3, n.burn = 1000, n.thin = 1,
             DIC = FALSE)
 
 
@@ -112,3 +113,15 @@ par(mar = c(1, 3, 3, 1),
 plot(mcfit)
 
 #plot( chain, auto.layout = F)
+
+
+# Prior plots -------------------------------------------------------------
+
+par(mfrow=c(1,2))
+curve(dnorm(x, dd[["mu"]], 1/dd[["tau_0"]]), ylim=c(0,0.2), col = "orchid", lwd = 3, main = "Location priors", ylab = 'probability density')
+curve(dnorm(x, dd2[["mu"]], 1/dd2[["tau_0"]]), add = T, col = "purple", lwd = 3)
+legend("topleft", col = c("orchid", "purple"), legend = c("main analysis", "sensitivity analysis"), lwd = 3, cex = 0.4, bty = 'n')
+
+curve(dgamma(x, dd[["a"]], dd[["b"]]), ylim=c(0,1), col= "orchid", lwd = 3, main = "Scale priors",  ylab = 'probability density')
+curve(dgamma(x, dd2[["a"]], dd2[["b"]]), add = T, col = "purple", lwd = 3)
+legend("topright", col = c("orchid", "purple"), legend = c("main analysis", "sensitivity analysis"), lwd = 3, cex = 0.4, bty = 'n')
