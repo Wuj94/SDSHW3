@@ -233,28 +233,26 @@ for(i in 1:n){
 
 ```{r, fig.align='center', fig.width=10}
 par(mfrow = c(1,2))
+
+# x1 and x2 histogram
 hist(data[,"x1"], col = rgb(0,0,1,.8), probability = T, 
-     main = "Marginal density of x1 and x2 overlapping",
-     xlab = "x")
+     main = "Marginal density of x1 and x2 overlapping", xlab = "x")
+
 hist(data[,"x2"], col = rgb(1,.5,0,.5), probability = T, add = T)
 legend("topleft", legend = c("X1", "X2", "X1 and X2"), pch = 22, bty = "n",
        col = c(rgb(0,0,1,.8), rgb(1,.5,0,.5), rgb(.6,0,.6,.8)))
 
-# ecdf mail list
+# x1 and x2 ecdf 
 plot(ecdf(data[,"x1"]), col = rgb(0,0,1,.5), lwd = 2, 
      main = "Marginal ECDF of x1 and x2 overlapping")
 
 plot(ecdf(data[,"x2"]), col = rgb(1,.5,0,.5), lwd = 2, add = T)
-
 legend("topleft", legend = c("X1", "X2"), lwd = 2, bty = "n",
        col = c(rgb(0,0,1,.8), rgb(1,.5,0,.8)))
 
 ```
 
-As we can see, first of all, it's clear that both the components of $\boldsymbol{X}$ have a normal distribution. Moreover, since we have choosen for both $\mu_1$ and $\mu_2$ a Normal prior with the ***same*** hyperparameters $\mu_0 = 0$, they tend to have the same distribution.
+As we can see, first of all, it's clear that both the components of $\boldsymbol{X}$ have a normal distribution. Moreover, since we have choosen for both $\mu_1$ and $\mu_2$ a Normal prior with the ***same*** hyperparameter $\mu_0 = 0$, they tend to have the same distribution.
 
 ---
-
----
-
 
