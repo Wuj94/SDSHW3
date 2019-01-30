@@ -218,7 +218,7 @@ for(i in 1:n){
   data[i, "mu2"] <- rnorm(1, n.mu, n.sd)           # sampling mu2
   data[i, "sigma2"] <- rgamma(1, g.shape, g.rate)  # sampling sigma2
   
-  data[i, "x1"] <- rnorm(1, data[i, "mu1"], sqrt(data[i, "sigma2"]))   # f(X1|mu1,sigma)
+  data[i, "x1"] <- rnorm(1, data[i, "mu1"], sqrt(data[i, "sigma2"]))   # f(X1|mu1, sigma)
   data[i, "x2"] <- rnorm(1, data[i, "mu2"], sqrt(data[i, "sigma2"]))   # f(X2|mu2, sigma)
   data[i, "y1"] <- rnorm(1, data[i, "mu1"], sqrt(data[i, "sigma2"]))   # f(Y1|mu1, sigma)
   data[i, "y2"] <- rnorm(1, data[i, "mu2"], sqrt(data[i, "sigma2"]))   # f(Y2|mu2, sigma)
