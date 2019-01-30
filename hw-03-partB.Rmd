@@ -1,0 +1,102 @@
+---
+title: "Stat4DS / Homework 03"
+author: "Giuseppe Calabrese, Michele Cernigliaro"
+date: "31/01/2019"
+output:
+  html_document: default
+  pdf_document: default
+linkcolor: cyan
+header-includes:
+- \usepackage{bbold}
+- \usepackage{framed, color}
+- \usepackage{graphicx}
+- \usepackage{mathabx}
+- \usepackage{mathtools}
+- \usepackage[makeroom]{cancel}
+- \definecolor{shadecolor}{rgb}{0.89,0.8,1}
+urlcolor: magenta
+
+---
+
+---
+
+Exercise part-B: Deep-Sky-Bayes
+----------
+
+
+***Consider a lognormal model with location and scale parameters $\mu$ and $\sigma$ for the stellar mass.***
+
+
+#### 0. Explore the dataset with some standard plot (e.g. histogram, density plot, boxplot, etc) and summary statistics (location, variability, skewness and kurtosis). Briefly comment on the shape of the mass distribution.
+
+
+```{r, fig.align = "center", fig.width = 10}
+df <- read.csv("NGC6611.csv")
+
+# histogram and density ---------------------------------------------------
+
+par(mfrow = c(1,2))
+hist(df$Mass, col = 'orchid', border = 'white',
+     main = "Histogram of the masses in NGC661", xlab = "Mass")
+
+d <- density(df$Mass)
+plot(d, col = "blue", lwd = 3, xlim = c(0, 1.8),
+     main = "Density of the masses in NGC661", xlab = "Mass")
+
+par(mfrow = c(1,1))
+
+```
+
+The histogram of the masses recorded in the NGC6611 dataset shows that 
+the most common mass value is under 0.5. Moreover, as the value of the mass
+increases, we get an increasingly lower number of observation for that value. 
+
+The density plot shows a multimodal distribution even though the distribution is quite a decreasing distribution after the first mode.
+
+```{r, fig.align = "center", fig.width = 10}
+# boxplot -----------------------------------------------------------------
+
+b <- boxplot(df$Mass)
+stats <-c(b$stats)
+names(stats) <- c("lower whisker", "lower hinge", "median", "upper hinge", "upper whisker")
+
+c(stats, IQR = IQR(df$Mass), outlier = b$out)
+
+```
+
+As we can see, the data is right-skewed. There's only one outlier which is above the upper whisker. The middle 50% of the data is spread over a range of 0.5135, from 0.1575 to 0.6715.
+
+***summary statistics***
+
+```{r}
+# skewness and kurtosis functions -----------------------------------------
+
+# sample skewness
+skewn <- function (X) {
+  n <- length(X)
+  num <- 1 / n * sum((X-mean(X))^3)
+  den <- 1 / (n-1) * sum((X-mean(X))^2)
+    
+  num/(den^(3/2))
+}
+# skewness is a measure of asymmetry around the mean.
+
+# sample kurtosis
+kurt <- function(x) {
+  mea <- mean(x)
+  m4 <- sum((x - mea)^4)/length(x)
+  m2 <- sum((x - mea)^2)/length(x)
+  
+  return(m4/(m2^2) - 3)
+}
+
+# summary statistics ------------------------------------------------------
+
+round(c(mean = mean(df$Mass), median = median(df$Mass), variance = var(df$Mass), 
+        skewness = skewn(df$Mass), kurtosis = kurt(df$Mass)), 3)
+
+```
+
+
+Since we have a positive skewness coefficient we confirm that the distribution of the masses recorded in NGC661 have a right tail, this means that the mass of the distribution is concentrated on the left of our density. Therefore, perhaps the median should be better than the mean as an index of centrality. The kurtosis coefficient is negative, this means that the tails are thin ("_platykurtic_" distribution).
+
