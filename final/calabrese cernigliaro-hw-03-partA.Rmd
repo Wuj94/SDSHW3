@@ -1,0 +1,244 @@
+---
+title: "Stat4DS / Homework 03"
+author: "Giuseppe Calabrese, Michele Cernigliaro"
+date: "31/01/2019"
+output:
+  html_document: default
+  pdf_document: default
+linkcolor: cyan
+header-includes:
+- \usepackage{bbold}
+- \usepackage{framed, color}
+- \usepackage{graphicx}
+- \usepackage{mathabx}
+- \usepackage{mathtools}
+- \usepackage[makeroom]{cancel}
+- \definecolor{shadecolor}{rgb}{0.89,0.8,1}
+urlcolor: magenta
+
+
+---
+
+---------------
+
+Exercise A.I: Ultra-fast exercise
+----------
+
+
+***Look at the two DAGs and use d-separation + Markov condition to check whether the indicated conditional independence relationships are satisfied.***
+
+For the exercise 1.A we can simply verify the conditional independences using *d-separation* method. We remark that, generally, two sets of nodes $\{X_A\}, \{X_B\}$ are d-separated by another set of nodes $\{X_C\}$ (the "observed" nodes) if, considering all the possible undirected paths from $\{X_A\}$ to $\{X_B\}$, we have that all the paths are **blocked**. d-separation implies conditional independece. To check wether a path is blocked or not, we have to see if at least one of the three condition is verified. The conditions can be consulted quickly on our [cheat_sheet](https://elearning.uniroma1.it/pluginfile.php/588226/mod_assign/intro/cheat_sheet_complete_v2.pdf).
+
+#### 1) graph (1), check wheter the conditional independence $x_2 \perp x_3 \lvert \{x_1,x_6\}$ is satisfied.
+
+First of all, we find out **two** undirected paths from $X_2$ to $X_3$:
+
+1. The **first one** is the path **$X_2 - X_1 - X_3$**. We notice immediatly that it's a common cause ($X_2 \leftarrow X_1 \rightarrow X_3$) where the observed value is $X_1$. Hence, we have a blocked path. We can move on analyzing the second path.
+
+
+2. The **second one** is the path **$X_2 - X_6 - X_5 - X_3$**. The observed value in this case is $X_6$. Any condition doesn't hold. So the path is not blocked. In detail, we have that $X_6$ is a collider ($X_2 \rightarrow X_6 \leftarrow X_5$), but $X_6$ is observed node. The 3rd condition is not verified. Moreover we have a chain ($X_3 \rightarrow X_5 \rightarrow X_6$) but $X_5$ is unobserved (we should have $X_6$ as "center" of the chain to satisfy the condition). Since we don't have any condition satisfied, the second path is not blocked.
+
+We don't have all the paths blocked, hence we are not able to conclude that $X_2$ is d-separated from $X_3$ by $\{X_1,X_6\}$, thus the conditional independence relation is not satisfied.
+
+---
+
+
+#### 2.a) graph (2), check wheter the conditional independence $X_1 \perp X_6 \lvert \{X_2,X_3\}$ is satisfied.
+
+Also in this case, we have **two** undirected paths, from $X_1$ to $X_6$:
+
+1. $X_1 - X_2 - X_6$. We notice immediately that it's a chain with observed value $X_2$ ($X_1 \rightarrow X_2 \rightarrow X_6$). Hence the path is blocked.
+
+2. $X_1 - X_3 - X_5 - X_6$. We have another chain ($X_1 \rightarrow X_3 \rightarrow X_5$) with observed value $X_3$. Also this path is blocked.
+
+Since every path is blocked, we can conclude that the conditional independence $X_1 \perp X_6 \lvert \{X_2,X_3\}$ is satisfied.
+
+
+---
+
+#### 2.b) For the conditional independence relation in (2), provide also a direct check by showing whether or not $p(x_6 \lvert x_{1:3}) = p(x_6 \lvert x_{2:3}$)
+
+Starting with the definition of conditional probability, we have the following:
+
+\[
+p(x_6 \lvert x_1,x_2,x_3) = \frac{p(x_1,x_2,x_3,x_6)}{p(x_1,x_2,x_3)}
+\]
+
+We can rewrite the joint probabilities conditioning both numerator and denominator w.r.t. $x_2$ and $x_3$:
+
+\[
+p(x_6 \lvert x_1,x_2,x_3) = \frac{p(x_1,x_6 \lvert x_2,x_3) \cdot p(x_2, x_3)}{p(x_1\lvert x_2,x_3) \cdot p(x_2, x_3)} = \frac{p(x_1,x_6 \lvert x_2,x_3) }{p(x_1\lvert x_2,x_3)}
+\]
+
+Now, using the fact that $x_1 \perp x_6 \lvert  x_2, x_3$ (as we demonstrated in the point 2.a), we factorize the numerator and we get that:
+
+\[
+p(x_6 \lvert  x_1,x_2,x_3) = \frac{p(x_1 \lvert  x_2,x_3) \cdot p(x_6 \lvert  x_2,x_3)}{p(x_1\lvert x_2,x_3)} = p(x_6 \lvert  x_2,x_3)
+\]
+
+
+---
+
+As extra, we provide a demonstration of the probability without using the conditional independence of $x_1$ and $x_6$.
+
+
+Using the Markov condition we can express the joint probability of our network as follows:
+
+\[
+p(x_1, x_2, x_3, x_4, x_5, x_6) = p(x_1) p(x_2 \lvert x_1) p(x_3 \lvert x_1) p(x_4 \lvert x_2) p(x_5 \lvert x_3) p(x_6 \lvert x_2, x_5)
+\]
+
+Now, starting with the LHS of the equation $p(x_6  \lvert  x_{1:3})$, by the definition of conditional probability we have:
+
+\[
+p(x_6  \lvert  x_1,x_2,x_3) = \frac{p(x_1,x_2,x_3,x_6)}{p(x_1,x_2,x_3)} = \frac{p(x_1) p(x_2  \lvert  x_1) p(x_3  \lvert  x_1) p(x_6  \lvert  x_2, x_5)}{p(x_1) p(x_2  \lvert  x_1) p(x_3  \lvert  x_1)} = \frac{p(x_2  \lvert  x_1) p(x_3  \lvert  x_1) p(x_6  \lvert  x_2, x_5)}{p(x_2  \lvert  x_1) p(x_3  \lvert  x_1)}
+\]
+
+  * We notice that the numerator is the marginalization, of the joint distribution discribed by the graph, w.r.t. $x_1, x_4, x_5$. In formula:\[p(x_2 \lvert x_1) p(x_3 \lvert x_1) p(x_6 \lvert x_2, x_5) = \sum_{x_1} p(x_1) p(x_2 \lvert x_1) p(x_3 \lvert x_1) \sum_{x_4} p(x_4\lvert x_2) \sum_{x_5} p(x_5 \lvert x_3) p(x_6 \lvert x_2, x_5) = p(x_2, x_3, x_6)\]
+
+  * At the same time, the denominator is the marginalization, of the joint distribution described by the graph, w.r.t. $x_1, x_4, x_5, x_6$. In formula:\[p(x_2 \lvert x_1) p(x_3 \lvert x_1) = \sum_{x_1} p(x_1) p(x_2 \lvert x_1) p(x_3 \lvert x_1) \sum_{x_4} p(x_4 \lvert x_2)\sum_{x_5} p(x_5 \lvert x_3) \sum_{x_6}p(x_6 \lvert x_2, x_5) = p(x_2, x_3)\]
+
+Substituting in the main equation, we get:
+\[
+p(x_6  \lvert  x_1,x_2,x_3) = \frac{p(x_2,x_3,x_6)}{p(x_2,x_3)} = p(x_6  \lvert  x_2, x_3)
+\]
+
+We have obtained $p(x_6  \lvert  x_{1:3}) = p(x_6 \lvert x_{2:3})$. Thus, by definition of conditional independence, $x_6 \perp x_1  \lvert  x_2, x_3$.
+
+---
+
+---
+
+Exercise A.II : Sampling a DAG
+----------
+***Given the Bayesian model in DAG format, conditionally on $\boldsymbol{\mu} = [\mu_1, \mu_2]$ and $\sigma^2$, we assume that:***
+
+$X = [X_1, X_2]^T \sim N_2(\boldsymbol{\mu}, \sigma^2 \mathbb{I}_2)$
+
+$Y = [Y_1, Y_2]^T \sim N_2(\boldsymbol{\mu}, \sigma^2 \mathbb{I}_2)$
+
+Therefore, $\boldsymbol{X} \in \mathbb{R}^2$ and $\boldsymbol{Y} \in \mathbb{R}^2$ are two random vectors with bivariate Normal distribution.
+
+---
+
+#### 1. Use what we studied about conditional distributions of multivariate Normal vectors to write down in formula the joint distribution corresponding to this dag.
+
+We start expressing the joint distribution of the DAG using the Markov condition:
+
+\[
+f(\boldsymbol{\mu}, \sigma^2, X_1,X_2,Y_1,Y_2 ) = f(\boldsymbol{\mu})f(\sigma^2)f(X_1  \lvert  \mu_1,\sigma^2)f(X_2  \lvert  X_1, \mu_2,\sigma^2) f(Y_1  \lvert  \mu_1,\sigma^2) f(Y_2  \lvert Y_1,  \mu_2, \sigma^2)
+\]
+
+First of all, we assume that the components of $\boldsymbol\mu$ are independent.
+By the assumptions made on $\boldsymbol{X}$ and $\boldsymbol{Y}$, we notice that for both the random vectors $\boldsymbol{X}$ and $\boldsymbol{Y}$, we have a diagonal matrix $\Sigma$:
+
+\[
+\Sigma = 
+\begin{bmatrix}
+    \sigma^2  & 0 \\
+       0      & \sigma^2 \\
+\end{bmatrix}
+\]
+
+There is no correlation between $X_1$ and $X_2$. Given that they're jointly normally distributed, they are independent too.
+The precision matrix is:
+
+\[
+\Sigma^{-1} = 
+\begin{bmatrix}
+    \frac{1}{\sigma^2}  & 0 \\
+       0      & \frac{1}{\sigma^2} \\
+\end{bmatrix}
+\]
+
+We can conclude that $X_1$ and $X_2$ conditionally independent given $\boldsymbol{\mu}$ and $\sigma^2$. We have a similar situation with $Y_1$ and $Y_2$. So, in the end we have the following CI's:
+
+$X_1 \perp X_2 \mid \boldsymbol{\mu}, \sigma^2 \implies f(X_2 \mid X_1, \mu_2, \sigma^2) = f(X_2 \mid \mu_2, \sigma^2),$
+
+$Y_1 \perp Y_2 \mid \boldsymbol{\mu}, \sigma^2 \implies f(Y_2 \mid Y_1, \mu_2, \sigma^2) = f(Y_2 \mid \mu_2, \sigma^2)$
+
+Now, we can rewrite our joint distribution as follows: 
+
+\[
+f(\boldsymbol{\mu}, \sigma^2, X_1,X_2,Y_1,Y_2 ) = f(\mu_1)f(\mu_2)f(\sigma^2)f(X_1  \lvert  \mu_1,\sigma^2)f(X_2  \lvert  \mu_2,\sigma^2) f(Y_1  \lvert  \mu_1,\sigma^2) f(Y_2  \lvert  \mu_2, \sigma^2)
+\]
+
+---
+
+#### 2. Choose two suitable (prior) distributions for $\mu$ and $\sigma^2$ and write the corresponding R code to simulate a sample of $n$ = 10000 random vectors from the joint distribution by forward/ancestral sampling.
+
+Since we have no clue of what the distribution represents, we choose two non-informative / flat priors. For $\mu_1$ and $\mu_2$ we choose two normal distributions, with mean 0 and standard deviation 1000. Instead for sigma, which is a positive scalar value for the variance of each random variable, we need a distribution that has positive support. We pick a gamma with shape 0.001 and rate 0.001. 
+
+```{r, fig.align='center', fig.width=10}
+n <- 10000 # sample size
+
+# initializing the matrix with the sampled values
+cnames <- c('mu1', 'mu2', 'sigma2', 'x1', 'x2', 'y1', 'y2')
+data <- matrix(data = NA, nrow=n, ncol=length(cnames))
+colnames(data) <- cnames
+
+# defining our hyperparameters
+n.mu <- 0         # mu for N
+n.sd <- 1000      # mu for N
+g.shape <- .001   # shape for Gamma
+g.rate <-  .001   # rate for Gamma
+
+# plotting the priors distributions
+col = viridis::viridis(2)
+par(mfrow = c(1,2))
+# mu1 (the same as mu2)
+curve(dnorm(x, n.mu, n.sd), xlim = c(-1500,1500), lwd = 3, col = col[1],
+      main = "Normal prior density")
+
+# sigma
+curve(dgamma(x, g.shape, g.rate), xlim = c(0,100), ylim = c(0,.01),
+      lwd = 3, col = col[2], main = "Gamma prior density")
+```
+
+Now that we've chosen our priors and we've set their hyperparameters, we simulate the sampling from the joint distribution using the ancestral/forward sampling:
+
+```{r}
+# forward sampling
+for(i in 1:n){
+  data[i, "mu1"] <- rnorm(1, n.mu, n.sd)           # sampling mu1
+  data[i, "mu2"] <- rnorm(1, n.mu, n.sd)           # sampling mu2
+  data[i, "sigma2"] <- rgamma(1, g.shape, g.rate)  # sampling sigma2
+  
+  data[i, "x1"] <- rnorm(1, data[i, "mu1"], sqrt(data[i, "sigma2"]))   # f(X1|mu1, sigma)
+  data[i, "x2"] <- rnorm(1, data[i, "mu2"], sqrt(data[i, "sigma2"]))   # f(X2|mu2, sigma)
+  data[i, "y1"] <- rnorm(1, data[i, "mu1"], sqrt(data[i, "sigma2"]))   # f(Y1|mu1, sigma)
+  data[i, "y2"] <- rnorm(1, data[i, "mu2"], sqrt(data[i, "sigma2"]))   # f(Y2|mu2, sigma)
+}
+```
+
+
+---
+
+#### 3. Show a suitable plot with the empirical distribution of each component of the X vector. What theoretical distribution are you approximately describing?
+
+
+```{r, fig.align='center', fig.width=10}
+par(mfrow = c(1,2))
+
+# x1 and x2 histogram
+hist(data[,"x1"], col = rgb(0,0,1,.8), probability = T, 
+     main = "Marginal density of x1 and x2 overlapping", xlab = "x")
+
+hist(data[,"x2"], col = rgb(1,.5,0,.5), probability = T, add = T)
+legend("topleft", legend = c("X1", "X2", "X1 and X2"), pch = 22, bty = "n",
+       col = c(rgb(0,0,1,.8), rgb(1,.5,0,.5), rgb(.6,0,.6,.8)))
+
+# x1 and x2 ecdf 
+plot(ecdf(data[,"x1"]), col = rgb(0,0,1,.5), lwd = 2, 
+     main = "Marginal ECDF of x1 and x2 overlapping")
+
+plot(ecdf(data[,"x2"]), col = rgb(1,.5,0,.5), lwd = 2, add = T)
+legend("topleft", legend = c("X1", "X2"), lwd = 2, bty = "n",
+       col = c(rgb(0,0,1,.8), rgb(1,.5,0,.8)))
+
+```
+
+As we can see, first of all, it's clear that both the components of $\boldsymbol{X}$ have a normal distribution. Moreover, since we have choosen for both $\mu_1$ and $\mu_2$ a Normal prior with the ***same*** hyperparameter $\mu_0 = 0$, they tend to have the same distribution.
+
+---
+

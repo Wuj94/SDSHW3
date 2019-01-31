@@ -1,0 +1,335 @@
+---
+title: "Stat4DS / Homework 03"
+author: "Giuseppe Calabrese, Michele Cernigliaro"
+date: "31/01/2019"
+output:
+  html_document: default
+  pdf_document: default
+linkcolor: cyan
+header-includes:
+- \usepackage{bbold}
+- \usepackage{framed, color}
+- \usepackage{graphicx}
+- \usepackage{mathabx}
+- \usepackage{mathtools}
+- \usepackage[makeroom]{cancel}
+- \definecolor{shadecolor}{rgb}{0.89,0.8,1}
+urlcolor: magenta
+
+---
+
+---
+
+Exercise part-B: Deep-Sky-Bayes
+----------
+
+
+***Consider a lognormal model with location and scale parameters $\mu$ and $\sigma$ for the stellar mass.***
+
+
+#### 0. Explore the dataset with some standard plot (e.g. histogram, density plot, boxplot, etc) and summary statistics (location, variability, skewness and kurtosis). Briefly comment on the shape of the mass distribution.
+
+
+```{r, fig.align = "center", fig.width = 10}
+df <- read.csv("NGC6611.csv")
+
+# histogram and density ---------------------------------------------------
+
+par(mfrow = c(1,2))
+hist(df$Mass, col = 'orchid', border = 'white',
+     main = "Histogram of the masses in NGC661", xlab = "Mass")
+
+d <- density(df$Mass)
+plot(d, col = "blue", lwd = 3, xlim = c(0, 1.8),
+     main = "Density of the masses in NGC661", xlab = "Mass")
+
+par(mfrow = c(1,1))
+
+```
+
+The histogram of the masses recorded in the NGC6611 dataset shows that 
+the most common mass values are under 0.5. Moreover, as the value of the mass
+increases, we get a lower number of observations. 
+
+The density plot shows a multimodal distribution even though the distribution is quite decreasing after the first mode.
+
+```{r, fig.align = "center", fig.width = 10}
+# boxplot -----------------------------------------------------------------
+
+b <- boxplot(df$Mass)
+stats <-c(b$stats)
+names(stats) <- c("lower whisker", "lower hinge", "median", "upper hinge", "upper whisker")
+
+c(stats, IQR = IQR(df$Mass), outlier = b$out)
+
+```
+
+As we can see, the data is right-skewed. There's only one outlier which is above the upper whisker. The middle 50% of the data is spread over a range of 0.5135, from 0.1575 to 0.6715.
+
+***summary statistics***
+
+```{r}
+# skewness and kurtosis functions -----------------------------------------
+
+# sample skewness
+skewn <- function (X) {
+  n <- length(X)
+  num <- 1 / n * sum((X-mean(X))^3)
+  den <- 1 / (n-1) * sum((X-mean(X))^2)
+    
+  num/(den^(3/2))
+}
+# skewness is a measure of asymmetry around the mean.
+
+# sample kurtosis
+kurt <- function(x) {
+  mea <- mean(x)
+  m4 <- sum((x - mea)^4)/length(x)
+  m2 <- sum((x - mea)^2)/length(x) 
+  
+  return(m4/(m2^2))
+}
+
+# summary statistics ------------------------------------------------------
+
+round(c(mean = mean(df$Mass), median = median(df$Mass), variance = var(df$Mass), 
+        skewness = skewn(df$Mass), kurtosis = kurt(df$Mass)), 3)
+
+```
+
+
+Since we have a **positive skewness** coefficient we confirm that the distribution of the masses recorded in NGC661 have a right tail, this means that the mass of the distribution is concentrated on the left of our density (the distribution of the data is *positively* or *right skewed*). Therefore, perhaps the median should be better than the mean as an index of centrality. The **kurtosis** coefficient is **near 3**, this means that the tails are slighty thinner than the standard normal's (also the distribution of the data is _platykurtic_ - less than 3).
+
+#### 1. Assuming non-informative Gaussian and Gamma priors for the location and scale parameter ($\mu,\sigma$), build the model as a Doodle in OpenBUGS and then save it as an .odc file that you will then upload on Moodle.
+
+We picked as prior distribution the following hyperparameters:
+
+$\tau_0 = 0.001$
+
+$\mu = 0$ 
+
+$location \sim N(\mu, \tau_0)$
+
+where $\tau_0$ is the precision (1 over variance).
+
+$a = 0.001$
+
+$b = 0.001$
+
+$scale \sim Gamma(a, b)$
+
+Since the scale parameter is a variance, we need to convert it into precision. We use the logical node $\tau$ to do it.
+The model for our data is:
+
+$y.log[i] \sim logNormal(location, \tau)$
+
+The model is on Moodle.
+
+#### 2. With this model at hand, initilize and then run 3 chains + a reasonable burn-in, to make inference on μ and σ. Report the relevant point estimates and credible intervals, qualitatively commenting on the mixing of the chain(s) by looking at the trace plots + autocorrelations (if you want, you can go deeper...)
+
+Before doing inference on our model, we need to check convergence and autocorrelation.
+Looking at traceplots for our chains, the convergence seems (qualitatively) resonable. In fact, all the chains appear to be overlapping one another. It happens for location and scale parameter. 
+Looking at the auto correlation plots, auto correlation is not apparent even though we have a low performing chain for the first iterations only. It happens for location and scale parameter.
+
+Using a burn in of 1000 iteration and 10000 total samples for 3 chains, we get:
+
+For the ***location parameter***, the following point estimates:
+
+***mean***: -1.255	
+
+***sd***: 0.07186	
+
+***MC_error***: 3.839E-4	
+
+***median***: -1.254	
+
+and the following ***95% credible interval***: [-1.396, -1.114]
+
+For the ***scale parameter***, we get the following point estimates:
+
+***mean***: 1.032	
+
+***sd***: 0.05095	
+
+***MC_error***: 2.915E-4	
+
+***median***: 1.03	
+
+and the following ***95% credible interval***: [0.9376, 1.139]
+
+Other results as the doodle with the model, the trace of the chains and the autocorrelation plots are shown in the .pdf and .txt files.
+
+#### 3. Now repeat the analysis in JAGS_within_R writing down explicitly the model in the BUGS language (it should not be difficult, just a few lines). Conclude by overlaying to the basic histogram/density plot the “best” Bayesian counterpart(s) of your choice.
+
+```{r, message = FALSE, warning=FALSE}
+require(R2jags, quietly = T)
+
+
+# Model -------------------------------------------------------------------
+
+model <- function(){
+  location ~ dnorm(mu, tau_0)
+  scale ~ dgamma(a, b)
+  tau <- pow(scale, -2)
+  for(i in 1:N){
+    y.log[i] ~ dlnorm(location, tau)
+  }
+}
+
+# Data --------------------------------------------------------------------
+
+dd <- list(mu = 0,      # parameters of prior distribution
+           tau_0 = 0.001,
+           a = 0.001, 
+           b = 0.001,
+           N = 208,
+           y.log = c( 0.678, 0.402, 0.132, 0.27, 0.284, 0.12, 0.32, 0.086, 0.316, 
+                      0.579, 0.08, 0.479, 0.299, 0.028, 0.2, 0.085, 0.377, 0.768, 0.525, 
+                      0.337, 0.576, 0.068, 0.18, 0.091, 0.364, 0.671, 0.071, 0.095, 0.316, 
+                      0.221, 0.239, 0.518, 0.039, 0.395, 0.409, 0.375, 0.255, 0.584, 0.581, 
+                      0.231, 0.237, 0.76, 0.543, 0.649, 0.768, 0.415, 0.548, 0.236, 0.052, 
+                      0.056, 0.575, 0.174, 0.447, 0.368, 0.019, 0.265, 0.037, 0.062, 0.203, 
+                      0.074, 0.698, 0.55, 0.435, 0.699, 0.137, 0.054, 0.025, 0.693, 0.063, 
+                      0.32, 0.585, 0.644, 0.061, 0.349, 0.352, 0.745, 0.111, 0.545, 0.182, 
+                      0.599, 0.2, 0.373, 0.236, 0.067, 0.293, 0.671, 0.058, 0.419, 0.782, 
+                      0.324, 0.729, 0.51, 0.029, 0.042, 0.392, 0.481, 0.727, 0.185, 0.269, 
+                      0.732, 0.243, 0.695, 0.291, 0.703, 0.595, 0.191, 0.059, 0.573, 0.081, 
+                      0.571, 0.615, 0.084, 0.274, 0.196, 0.383, 0.195, 0.585, 0.477, 0.118, 
+                      0.25, 0.375, 0.066, 0.072, 0.082, 0.354, 0.158, 0.78, 0.126, 0.043, 
+                      0.241, 0.038, 0.034, 0.536, 0.198, 0.066, 0.284, 0.19, 0.026, 0.05, 
+                      0.079, 0.742, 0.231, 0.474, 0.05, 0.042, 0.136, 0.032, 0.157, 0.163, 
+                      0.063, 0.289, 0.854, 0.341, 0.274, 0.205, 0.654, 0.269, 0.106, 0.366, 
+                      0.34, 0.112, 0.35, 1.018, 0.791, 0.711, 0.796, 0.289, 0.345, 0.298, 
+                      0.672, 0.04, 0.502, 0.841, 0.243, 0.05, 0.699, 0.863, 0.816, 0.854, 
+                      0.594, 0.375, 0.316, 1.03, 0.951, 0.79, 0.772, 0.859, 0.951, 0.933, 
+                      1.129, 0.739, 0.925, 0.796, 1.029, 1.136, 1.092, 1.036, 0.818, 1.413, 
+                      1.022, 0.663, 1.078, 1.461, 1.19, 0.986, 1.099, 0.924, 1.23 )
+)
+
+
+# Initial Values ----------------------------------------------------------
+init <- list(list(location = 0, scale = 2),
+             list(location = 1, scale = .4),
+             list(location = 2, scale = 5.2))
+
+
+
+# Model Fitting -----------------------------------------------------------
+
+fit <- jags(model = model, init = init, 
+            param = c("location", "scale"), 
+            data = dd, n.iter = 10000, 
+            n.chain = 3, n.burn = 1000, n.thin = 1,
+            DIC = FALSE)
+
+
+fit
+
+```
+
+As shown in the last output, the two base condition for a Markov Chain to converge are met. We have an $R < 1.05$ and an effective sample size greater than 4000, for location and scale parameters.
+
+```{r, fig.align = "center", fig.width = 10}
+# Density plot ------------------------------------------------------------
+
+mcfit = as.mcmc(fit)
+
+par(mar = c(1, 3, 3, 1), 
+    oma = c(4, 4, 0.2, 0.2),
+    mfrow = c(2,2))
+plot(mcfit)
+
+```
+
+Now, we can try to overlay the histogram plot using a lognormal density with the estimates for ***location*** and ***scale*** using respectively the posterior mean and the lower and upper bounds of the 95% credible intervals.
+
+```{r, fig.align="center", fig.width=10}
+
+
+hist(df$Mass, probability = T, breaks = 40, col = rgb(0,.55,.9,.8),
+     main = "Histogram of the masses", xlab = "Mass", ylim = c(0, 3))
+
+lines(seq(0,1.5,0.01), dlnorm(seq(0,1.5,0.01), -1.255,1.032), lwd = 3,
+      col = "orange")
+lines(seq(0,1.5,0.01), dlnorm(seq(0,1.5,0.01),  -1.396, 0.9376), lwd = 3, 
+      col = "red")
+lines(seq(0,1.5,0.01), dlnorm(seq(0,1.5,0.01),  -1.114, 1.139), lwd = 3, 
+      col = rgb(.14,1,0,.5))
+legend("topright", legend = c("logNormal~(-1.255,1.032)", "logNormal~(-1.396,0.9376)", "logNormal~(-1.114,1.139)"), 
+       lwd = 3, col = c("orange", "red", rgb(.14,1,0,.5)), bty = 'n')
+
+```
+
+#### 4. Perform a quick sensitivity analysis by slightly changing the priors and reporting on the impact you see on your inferential conclusions.
+
+```{r, message = FALSE, warning=FALSE}
+# Sensitivity Analysis ----------------------------------------------------
+
+dd2 <- list(mu = 1,      # parameters of prior distribution
+           tau_0 = 0.1,
+           a = 0.1, 
+           b = 0.1,
+           N = 208,
+           y.log = c( 0.678, 0.402, 0.132, 0.27, 0.284, 0.12, 0.32, 0.086, 0.316, 
+                      0.579, 0.08, 0.479, 0.299, 0.028, 0.2, 0.085, 0.377, 0.768, 0.525, 
+                      0.337, 0.576, 0.068, 0.18, 0.091, 0.364, 0.671, 0.071, 0.095, 0.316, 
+                      0.221, 0.239, 0.518, 0.039, 0.395, 0.409, 0.375, 0.255, 0.584, 0.581, 
+                      0.231, 0.237, 0.76, 0.543, 0.649, 0.768, 0.415, 0.548, 0.236, 0.052, 
+                      0.056, 0.575, 0.174, 0.447, 0.368, 0.019, 0.265, 0.037, 0.062, 0.203, 
+                      0.074, 0.698, 0.55, 0.435, 0.699, 0.137, 0.054, 0.025, 0.693, 0.063, 
+                      0.32, 0.585, 0.644, 0.061, 0.349, 0.352, 0.745, 0.111, 0.545, 0.182, 
+                      0.599, 0.2, 0.373, 0.236, 0.067, 0.293, 0.671, 0.058, 0.419, 0.782, 
+                      0.324, 0.729, 0.51, 0.029, 0.042, 0.392, 0.481, 0.727, 0.185, 0.269, 
+                      0.732, 0.243, 0.695, 0.291, 0.703, 0.595, 0.191, 0.059, 0.573, 0.081, 
+                      0.571, 0.615, 0.084, 0.274, 0.196, 0.383, 0.195, 0.585, 0.477, 0.118, 
+                      0.25, 0.375, 0.066, 0.072, 0.082, 0.354, 0.158, 0.78, 0.126, 0.043, 
+                      0.241, 0.038, 0.034, 0.536, 0.198, 0.066, 0.284, 0.19, 0.026, 0.05, 
+                      0.079, 0.742, 0.231, 0.474, 0.05, 0.042, 0.136, 0.032, 0.157, 0.163, 
+                      0.063, 0.289, 0.854, 0.341, 0.274, 0.205, 0.654, 0.269, 0.106, 0.366, 
+                      0.34, 0.112, 0.35, 1.018, 0.791, 0.711, 0.796, 0.289, 0.345, 0.298, 
+                      0.672, 0.04, 0.502, 0.841, 0.243, 0.05, 0.699, 0.863, 0.816, 0.854, 
+                      0.594, 0.375, 0.316, 1.03, 0.951, 0.79, 0.772, 0.859, 0.951, 0.933, 
+                      1.129, 0.739, 0.925, 0.796, 1.029, 1.136, 1.092, 1.036, 0.818, 1.413, 
+                      1.022, 0.663, 1.078, 1.461, 1.19, 0.986, 1.099, 0.924, 1.23 )
+)
+
+
+fit2 <- jags(model = model, init = init, 
+            param = c("location", "scale"), 
+            data = dd2, n.iter = 10000, 
+            n.chain = 3, n.burn = 1000, n.thin = 1,
+            DIC = FALSE)
+
+
+fit2
+```
+The prior choosed for our (main) analysis are:
+
+$Location \sim N(0, 1000)$
+
+$Scale \sim Gamma(0.001, 0.001)$
+
+in the sensitivity analysis we picked:
+
+$Location \sim N(1, 10)$
+
+$Scale \sim Gamma(0.1, 0.1)$
+
+
+```{r, fig.align = "center", fig.width = 10}
+# Prior plots ------------------------------------------------------------
+
+par(mfrow=c(1,2))
+curve(dnorm(x, dd[["mu"]], 1/dd[["tau_0"]]), ylim=c(0,0.05), col = "orchid", lwd = 3, main = "Location priors", ylab = 'probability density', xlim=c(-50, 50))
+curve(dnorm(x, dd2[["mu"]], 1/dd2[["tau_0"]]), add = T, col = "purple", lwd = 3)
+legend("topleft", col = c("orchid", "purple"), legend = c("main analysis", "sensitivity analysis"), lwd = 3, bty = 'n')
+
+curve(dgamma(x, dd[["a"]], dd[["b"]]), ylim=c(0,1), col= "orchid", lwd = 3, main = "Scale priors",  ylab = 'probability density')
+curve(dgamma(x, dd2[["a"]], dd2[["b"]]), add = T, col = "purple", lwd = 3)
+legend("topright", col = c("orchid", "purple"), legend = c("main analysis", "sensitivity analysis"), lwd = 3, bty = 'n')
+
+
+```
+
+Even though we choosed more informative priors (the location and scale parameters are more "concentrated" around 0), we got almost the same inferential results. Moreover, we got a similar standard deviation for the parameter estimates.
+The model turns out to be not so sensible to our choices for the priors.
