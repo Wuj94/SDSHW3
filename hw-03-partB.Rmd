@@ -100,23 +100,32 @@ round(c(mean = mean(df$Mass), median = median(df$Mass), variance = var(df$Mass),
 
 Since we have a **positive skewness** coefficient we confirm that the distribution of the masses recorded in NGC661 have a right tail, this means that the mass of the distribution is concentrated on the left of our density (the distribution of the data is *positively* or *right skewed*). Therefore, perhaps the median should be better than the mean as an index of centrality. The **kurtosis** coefficient is **near 3**, this means that the tails are slighty thinner than the standar normal's (also the distribution of the data is _platykurtic_ - less than 3).
 
-#### Assuming non-informative Gaussian and Gamma priors for the location and scale parameter ($\mu,\sigma$), build the model as a Doodle in OpenBUGS and then save it as an .odc file that you will then upload on Moodle.
+#### 1. Assuming non-informative Gaussian and Gamma priors for the location and scale parameter ($\mu,\sigma$), build the model as a Doodle in OpenBUGS and then save it as an .odc file that you will then upload on Moodle.
 
 We picked as prior distribution the following hyperparameters:
+
 $\tau_0 = 0.001$
+
 $\mu = 0$ 
+
 $location \sim N(\mu, \tau_0)$
+
 where \tau_0 is the precision (1 over variance).
+
 $a = 0.001$
+
 $b = 0.001$
+
 $scale \sim Gamma(a, b)$
+
 Since the scale parameter is a variance, we need to convert it into precision. We use the logical node $\tau$ to do it.
 The model for our data is:
+
 $y.log[i] \sim logNormal(location, \tau)$
 
 The model is on Moodle.
 
-#### With this model at hand, initilize and then run 3 chains + a reasonable burn-in, to make inference on μ and σ. Report the relevant point estimates and credible intervals, qualitatively commenting on the mixing of the chain(s) by looking at the trace plots + autocorrelations (if you want, you can go deeper...)
+#### 2. With this model at hand, initilize and then run 3 chains + a reasonable burn-in, to make inference on μ and σ. Report the relevant point estimates and credible intervals, qualitatively commenting on the mixing of the chain(s) by looking at the trace plots + autocorrelations (if you want, you can go deeper...)
 
 Before doing inference on our model, we need to check convergence and autocorrelation.
 Looking at traceplots for our chains, the convergence seems (qualitatively) resonable. In fact, all the chains appear to be overlapping one another. It happens for location and scale parameter. 
@@ -124,42 +133,41 @@ Looking at the auto correlation plots, auto correlation is not apparent even tho
 
 Using a burn in of 1000 iteration and 10000 total samples for 3 chains, we get:
 
-For the location parameter, the following point estimates:
+For the ***location parameter***, the following point estimates:
 
-mean	  
+***mean***	  
 -1.255	
 
-sd	    
+***sd***    
 0.07186	
 
-MC_error	
+***MC_error***
 3.839E-4	
 
-median	
+***median***	
 -1.254	
 
-and the following 95% credible interval:
-
+and the following ***95% credible interval***:
 [-1.396, -1.114]
 
-For the scale parameter, we get the following point estimates:
+For the ***scale parameter***, we get the following point estimates:
 
-mean	
+***mean***
 1.032	
 
-sd	
+***sd***
 0.05095	
 
-MC_error	
+***MC_error***	
 2.915E-4	
 
-median	
+***median***
 1.03	
 
-and the following credible interval:
+and the following ***95% credible interval***:
 [0.9376, 1.139]
 
-#### Now repeat the analysis in JAGS_within_R writing down explicitly the model in the BUGS language (it should not be difficult, just a few lines). Conclude by overlaying to the basic histogram/density plot the “best” Bayesian counterpart(s) of your choice.
+#### 3. Now repeat the analysis in JAGS_within_R writing down explicitly the model in the BUGS language (it should not be difficult, just a few lines). Conclude by overlaying to the basic histogram/density plot the “best” Bayesian counterpart(s) of your choice.
 
 ```{r, message = FALSE, warning=FALSE}
 require(R2jags, quietly = T)
@@ -241,6 +249,18 @@ plot(mcfit)
 
 ```
 
+Now, we can try to overlay the histogram plot using a lognormal density with the point estimates for location (-1.255) and scale (1.032). 
+
+```{r, fig.align="center", fig.width=10}
+
+hist(df$Mass, probability = T, breaks = 40, col = rgb(0,.55,.9,.8),
+     main = "Histogram of the masses", xlab = "Mass")
+
+lines(seq(0,1.5,0.01), dlnorm(seq(0,1.5,0.01), -1.255,1.032), lwd = 3,
+      col = "orange")
+legend("topright", legend = c("logNormal~(-1.255,1.032)"), 
+       lwd = 3, col = "orange")
+```
 
 #### Perform a quick sensitivity analysis by slightly changing the priors and reporting on the impact you see on your inferential conclusions.
 
@@ -302,3 +322,4 @@ curve(dgamma(x, dd2[["a"]], dd2[["b"]]), add = T, col = "purple", lwd = 3)
 legend("topright", col = c("orchid", "purple"), legend = c("main analysis", "sensitivity analysis"), lwd = 3, bty = 'n')
 
 ```
+
