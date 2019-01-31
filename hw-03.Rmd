@@ -126,9 +126,10 @@ Therefore, $\boldsymbol{X} \in \mathbb{R}^2$ and $\boldsymbol{Y} \in \mathbb{R}^
 We start expressing the joint distribution of the DAG using the Markov condition:
 
 \[
-f(\boldsymbol{\mu}, \sigma^2, X_1,X_2,Y_1,Y_2 ) = f(\mu_1)f(\mu_2)f(\sigma^2)f(X_1  \lvert  \mu_1,\sigma^2)f(X_2  \lvert  X_1, \mu_2,\sigma^2) f(Y_1  \lvert  \mu_1,\sigma^2) f(Y_2  \lvert Y_1,  \mu_2, \sigma^2)
+f(\boldsymbol{\mu}, \sigma^2, X_1,X_2,Y_1,Y_2 ) = f(\boldsymbol{\mu})f(\sigma^2)f(X_1  \lvert  \mu_1,\sigma^2)f(X_2  \lvert  X_1, \mu_2,\sigma^2) f(Y_1  \lvert  \mu_1,\sigma^2) f(Y_2  \lvert Y_1,  \mu_2, \sigma^2)
 \]
 
+First of all, we assume that the components of $\boldsymbol\mu$ are independent.
 By the assumptions made on $\boldsymbol{X}$ and $\boldsymbol{Y}$, we notice that for both the random vectors $\boldsymbol{X}$ and $\boldsymbol{Y}$, we have a diagonal matrix $\Sigma$:
 
 \[
@@ -139,7 +140,18 @@ By the assumptions made on $\boldsymbol{X}$ and $\boldsymbol{Y}$, we notice that
 \end{bmatrix}
 \]
 
-There is no correlation between $X_1$ and $X_2$. Given that they're jointly normally distributed, we can conclude that they're also conditionally independent given $\boldsymbol{\mu}$ and $\sigma^2$. We have a similar situation with $Y_1$ and $Y_2$. So, in the end we have the following CI's:
+There is no correlation between $X_1$ and $X_2$. Given that they're jointly normally distributed, they are independent too.
+The precision matrix is:
+
+\[
+\Sigma^{-1} = 
+\begin{bmatrix}
+    \frac{1}{\sigma^2}  & 0 \\
+       0      & \frac{1}{\sigma^2} \\
+\end{bmatrix}
+\]
+
+We can conclude that $X_1$ and $X_2$ conditionally independent given $\boldsymbol{\mu}$ and $\sigma^2$. We have a similar situation with $Y_1$ and $Y_2$. So, in the end we have the following CI's:
 
 $X_1 \perp X_2 \mid \boldsymbol{\mu}, \sigma^2 \implies f(X_2 \mid X_1, \mu_2, \sigma^2) = f(X_2 \mid \mu_2, \sigma^2),$
 
