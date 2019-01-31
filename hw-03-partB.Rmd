@@ -135,37 +135,29 @@ Using a burn in of 1000 iteration and 10000 total samples for 3 chains, we get:
 
 For the ***location parameter***, the following point estimates:
 
-***mean***	  
--1.255	
+***mean***: -1.255	
 
-***sd***    
-0.07186	
+***sd***: 0.07186	
 
-***MC_error***
-3.839E-4	
+***MC_error***: 3.839E-4	
 
-***median***	
--1.254	
+***median***: -1.254	
 
-and the following ***95% credible interval***:
-[-1.396, -1.114]
+and the following ***95% credible interval***: [-1.396, -1.114]
 
 For the ***scale parameter***, we get the following point estimates:
 
-***mean***
-1.032	
+***mean***: 1.032	
 
-***sd***
-0.05095	
+***sd***: 0.05095	
 
-***MC_error***	
-2.915E-4	
+***MC_error***: 2.915E-4	
 
-***median***
-1.03	
+***median***: 1.03	
 
-and the following ***95% credible interval***:
-[0.9376, 1.139]
+and the following ***95% credible interval***: [0.9376, 1.139]
+
+Other results as the doodle with the model, the trace of the chains and the autocorrelation plots are shown in the .pdf and .txt files.
 
 #### 3. Now repeat the analysis in JAGS_within_R writing down explicitly the model in the BUGS language (it should not be difficult, just a few lines). Conclude by overlaying to the basic histogram/density plot the “best” Bayesian counterpart(s) of your choice.
 
