@@ -158,7 +158,7 @@ $Y_1 \perp Y_2 \mid \boldsymbol{\mu}, \sigma^2 \implies f(Y_2 \mid Y_1, \mu_2, \
 Now, we can rewrite our joint distribution as follows: 
 
 \[
-f(\boldsymbol{\mu}, \sigma^2, X_1,X_2,Y_1,Y_2 ) = f(X_1  \lvert  \mu_1,\sigma^2)f(X_2  \lvert  \mu_2,\sigma^2) f(Y_1  \lvert  \mu_1,\sigma^2) f(Y_2  \lvert  \mu_2, \sigma^2)
+f(\boldsymbol{\mu}, \sigma^2, X_1,X_2,Y_1,Y_2 ) = f(\mu_1)f(\mu_2)f(\sigma^2)f(X_1  \lvert  \mu_1,\sigma^2)f(X_2  \lvert  \mu_2,\sigma^2) f(Y_1  \lvert  \mu_1,\sigma^2) f(Y_2  \lvert  \mu_2, \sigma^2)
 \]
 
 ---
