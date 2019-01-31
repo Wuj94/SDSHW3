@@ -31,16 +31,6 @@ For the exercise 1.A we can simply verify the conditional independences using *d
 
 #### 1) graph (1), check wheter the conditional independence $x_2 \perp x_3 \lvert \{x_1,x_6\}$ is satisfied.
 
-```{r, include=FALSE}
-library("ggdag")
-dag <- dagify(x6 ~ x2 + x5,
-              x4 ~ x2,
-              x2 ~ x1,
-              x3 ~ x1,
-              x5 ~ x3)
-ggdag(dag) + theme_dag_blank()
-```
-
 First of all, we find out **two** undirected paths from $X_2$ to $X_3$:
 
 1. The **first one** is the path **$X_2 - X_1 - X_3$**. We notice immediatly that it's a common cause ($X_2 \leftarrow X_1 \rightarrow X_3$) where the observed value is $X_1$. Hence, we have a blocked path. We can move on analyzing the second path.
@@ -136,10 +126,10 @@ Therefore, $\boldsymbol{X} \in \mathbb{R}^2$ and $\boldsymbol{Y} \in \mathbb{R}^
 We start expressing the joint distribution of the DAG using the Markov condition:
 
 \[
-f(\boldsymbol{\mu}, \sigma^2, X_1,X_2,Y_1,Y_2 ) = f(\boldsymbol{\mu})f(\sigma^2)f(X_1  \lvert  \mu_1,\sigma^2)f(X_2  \lvert  X_1, \mu_2,\sigma^2) f(Y_1  \lvert  \mu_1,\sigma^2) f(Y_2  \lvert Y_1,  \mu_2, \sigma^2)
+f(\boldsymbol{\mu}, \sigma^2, X_1,X_2,Y_1,Y_2 ) = f(\mu_1)f(\mu_2)f(\sigma^2)f(X_1  \lvert  \mu_1,\sigma^2)f(X_2  \lvert  X_1, \mu_2,\sigma^2) f(Y_1  \lvert  \mu_1,\sigma^2) f(Y_2  \lvert Y_1,  \mu_2, \sigma^2)
 \]
 
-Since $\mu_1, \mu_2, \sigma^2$ are constants, their probability is 1. Moreover, by the assumptions made on $\boldsymbol{X}$ and $\boldsymbol{Y}$, we notice that for both the random vectors $\boldsymbol{X}$ and $\boldsymbol{Y}$, we have a diagonal matrix $\Sigma$:
+By the assumptions made on $\boldsymbol{X}$ and $\boldsymbol{Y}$, we notice that for both the random vectors $\boldsymbol{X}$ and $\boldsymbol{Y}$, we have a diagonal matrix $\Sigma$:
 
 \[
 \Sigma = 
@@ -149,7 +139,7 @@ Since $\mu_1, \mu_2, \sigma^2$ are constants, their probability is 1. Moreover, 
 \end{bmatrix}
 \]
 
-It means that there is no correlation between $X_1$ and $X_2$. We can conclude that they're also conditionally independent given $\boldsymbol{\mu}$ and $\sigma^2$. We have a similar situation with $Y_1$ and $Y_2$. So, in the end we have the following CI's:
+There is no correlation between $X_1$ and $X_2$. Given that they're jointly normally distributed, we can conclude that they're also conditionally independent given $\boldsymbol{\mu}$ and $\sigma^2$. We have a similar situation with $Y_1$ and $Y_2$. So, in the end we have the following CI's:
 
 $X_1 \perp X_2 \mid \boldsymbol{\mu}, \sigma^2 \implies f(X_2 \mid X_1, \mu_2, \sigma^2) = f(X_2 \mid \mu_2, \sigma^2),$
 
