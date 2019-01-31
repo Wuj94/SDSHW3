@@ -49,7 +49,7 @@ par(mfrow = c(1,1))
 
 The histogram of the masses recorded in the NGC6611 dataset shows that 
 the most common mass values are under 0.5. Moreover, as the value of the mass
-increases, we get lower observations for that value. 
+increases, we get a lower number of observations. 
 
 The density plot shows a multimodal distribution even though the distribution is quite decreasing after the first mode.
 
@@ -98,7 +98,7 @@ round(c(mean = mean(df$Mass), median = median(df$Mass), variance = var(df$Mass),
 ```
 
 
-Since we have a **positive skewness** coefficient we confirm that the distribution of the masses recorded in NGC661 have a right tail, this means that the mass of the distribution is concentrated on the left of our density (the distribution of the data is *positively* or *right skewed*). Therefore, perhaps the median should be better than the mean as an index of centrality. The **kurtosis** coefficient is **near 3**, this means that the tails are slighty thinner than the standar normal's (also the distribution of the data is _platykurtic_ - less than 3).
+Since we have a **positive skewness** coefficient we confirm that the distribution of the masses recorded in NGC661 have a right tail, this means that the mass of the distribution is concentrated on the left of our density (the distribution of the data is *positively* or *right skewed*). Therefore, perhaps the median should be better than the mean as an index of centrality. The **kurtosis** coefficient is **near 3**, this means that the tails are slighty thinner than the standard normal's (also the distribution of the data is _platykurtic_ - less than 3).
 
 #### 1. Assuming non-informative Gaussian and Gamma priors for the location and scale parameter ($\mu,\sigma$), build the model as a Doodle in OpenBUGS and then save it as an .odc file that you will then upload on Moodle.
 
@@ -256,7 +256,7 @@ legend("topright", legend = c("logNormal~(-1.255,1.032)", "logNormal~(-1.396,0.9
        lwd = 3, col = c("orange", "red"), bty = 'n')
 ```
 
-#### Perform a quick sensitivity analysis by slightly changing the priors and reporting on the impact you see on your inferential conclusions.
+#### 4. Perform a quick sensitivity analysis by slightly changing the priors and reporting on the impact you see on your inferential conclusions.
 
 ```{r, message = FALSE, warning=FALSE}
 # Sensitivity Analysis ----------------------------------------------------
