@@ -1,5 +1,16 @@
 df <- read.csv("/home/data/MScDS/SDS/SDSHW3/NGC6611.csv")
 
+
+
+hist(df$Mass, probability = T, breaks = 40, col = rgb(0,.55,.9,.8),
+     main = "Histogram of the masses", xlab = "Mass", ylim = c(0, 3))
+
+lines(seq(0,1.5,0.01), dlnorm(seq(0,1.5,0.01), -1.255,1.032), lwd = 3,
+      col = "orange")
+lines(seq(0,1.5,0.01), dlnorm(seq(0,1.5,0.01),  -1.396, 0.9376), lwd = 3, 
+      col = "red")
+legend("topright", legend = c("logNormal~(-1.255,1.032)", "logNormal~(-1.396,0.9376)"), 
+       lwd = 3, col = c("orange", "red"), bty = 'n')
 # histogram and density ---------------------------------------------------
 
 par(mfrow = c(1,2))
@@ -60,3 +71,4 @@ kurt <- function(x) {
 }
 
 kurt(df$Mass)
+

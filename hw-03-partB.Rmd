@@ -235,7 +235,7 @@ fit
 
 ```
 
-As shown in the last output, the two base condition for a Markov Chain to converge are met. We have an $R < 1.05$ and an effective sample size greater than 4000, for location and scale parameter.
+As shown in the last output, the two base condition for a Markov Chain to converge are met. We have an $R < 1.05$ and an effective sample size greater than 4000, for location and scale parameters.
 
 ```{r, fig.align = "center", fig.width = 10}
 # Density plot ------------------------------------------------------------
@@ -249,17 +249,19 @@ plot(mcfit)
 
 ```
 
-Now, we can try to overlay the histogram plot using a lognormal density with the point estimates for location (-1.255) and scale (1.032). 
+Now, we can try to overlay the histogram plot using a lognormal density with the estimates for location (the mean -1.255 and the lower 95% credible interval 1.032) and scale (the mean 1.032 and the lower 95% credible interval 0.9376). 
 
 ```{r, fig.align="center", fig.width=10}
 
 hist(df$Mass, probability = T, breaks = 40, col = rgb(0,.55,.9,.8),
-     main = "Histogram of the masses", xlab = "Mass")
+     main = "Histogram of the masses", xlab = "Mass", ylim = c(0, 3))
 
 lines(seq(0,1.5,0.01), dlnorm(seq(0,1.5,0.01), -1.255,1.032), lwd = 3,
       col = "orange")
-legend("topright", legend = c("logNormal~(-1.255,1.032)"), 
-       lwd = 3, col = "orange")
+lines(seq(0,1.5,0.01), dlnorm(seq(0,1.5,0.01),  -1.396, 0.9376), lwd = 3, 
+      col = "red")
+legend("topright", legend = c("logNormal~(-1.255,1.032)", "logNormal~(-1.396,0.9376)"), 
+       lwd = 3, col = c("orange", "red"), bty = 'n')
 ```
 
 #### Perform a quick sensitivity analysis by slightly changing the priors and reporting on the impact you see on your inferential conclusions.
@@ -305,15 +307,24 @@ fit2 <- jags(model = model, init = init,
 
 fit2
 ```
+The prior choosed for our (main) analysis are:
 
-Slightly changing our priors, we got almost the same inferential results. Moreover, we got a similar standard deviation for the parameter estimates.
-The model turns out to be not so sensible to our choices for the priors.
+$Location \sim N(0, 1000)$
+
+$Scale \sim Gamma(0.001, 0.001)$
+
+in the sensitivity analysis we picked:
+
+$Location \sim N(1, 10)$
+
+$Scale \sim Gamma(0.1, 0.1)$
+
 
 ```{r, fig.align = "center", fig.width = 10}
 # Prior plots ------------------------------------------------------------
 
 par(mfrow=c(1,2))
-curve(dnorm(x, dd[["mu"]], 1/dd[["tau_0"]]), ylim=c(0,0.2), col = "orchid", lwd = 3, main = "Location priors", ylab = 'probability density')
+curve(dnorm(x, dd[["mu"]], 1/dd[["tau_0"]]), ylim=c(0,0.05), col = "orchid", lwd = 3, main = "Location priors", ylab = 'probability density', xlim=c(-50, 50))
 curve(dnorm(x, dd2[["mu"]], 1/dd2[["tau_0"]]), add = T, col = "purple", lwd = 3)
 legend("topleft", col = c("orchid", "purple"), legend = c("main analysis", "sensitivity analysis"), lwd = 3, bty = 'n')
 
@@ -323,3 +334,5 @@ legend("topright", col = c("orchid", "purple"), legend = c("main analysis", "sen
 
 ```
 
+Even though we choosed more informative priors (the location and scale parameters are more "concentrated" around 0), we got almost the same inferential results. Moreover, we got a similar standard deviation for the parameter estimates.
+The model turns out to be not so sensible to our choices for the priors.
